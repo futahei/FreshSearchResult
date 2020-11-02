@@ -8,7 +8,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, "dist/js"),
-    filename: "[name].js"
+    filename: "[name].js",
   },
   module: {
     rules: [
@@ -23,6 +23,6 @@ module.exports = {
     extensions: [".ts", ".js"],
   },
   plugins: [
-    new CopyPlugin([{ from: ".", to: "../"}], { context: "public" })
+    new CopyPlugin({ patterns: [{ from: ".", to: "../", context: "public" }]})
   ],
 };
