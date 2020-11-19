@@ -17,8 +17,8 @@ $(function() {
         const date = new Date(dataString);
         const elapsed = NOW.getTime() - date.getTime();
         const density = 1 - Math.max(Math.min(elapsed / BASE, 1), 0);
-        element.style.backgroundColor = `rgba(${205+ONEMINUSCOLOR[0]*density}, ${170+ONEMINUSCOLOR[1]*density}, ${85+ONEMINUSCOLOR[2]*density}, 0.5)`;
-        // element.style.opacity = density.toString();
+        // element.style.backgroundColor = `rgba(${205+ONEMINUSCOLOR[0]*density}, ${170+ONEMINUSCOLOR[1]*density}, ${85+ONEMINUSCOLOR[2]*density}, 0.5)`;
+        element.style.opacity = (Math.max(density, 0.1)).toString();
         return;
       }
     }
