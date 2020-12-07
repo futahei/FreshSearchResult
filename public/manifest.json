@@ -2,8 +2,9 @@
   "manifest_version": 2,
   "name": "FreshSearchResult",
   "description": "新鮮な情報の見分けをつけます",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "icons": { "128": "image/icon128.png" },
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": [
