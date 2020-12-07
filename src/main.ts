@@ -12,10 +12,20 @@ const main = function() {
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
     if (span.length > 0) {
-      const dataString = span[0].innerHTML.substring(0, 10);
-      if (dataString.match(/\d{4}\/\d{2}\/\d{2}/))
+      let date: Date|null = null;
+      if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/))
       {
-        const date = new Date(dataString);
+        date = new Date(span[0].innerHTML.substring(0, 10));
+      } else if (span[0].innerHTML.substring(0, 4).match(/\d* 日前/))
+      {
+        const found = span[0].innerHTML.substring(0, 4).match(/(?<days>\d*) 日前/);
+        const days = Number(found?.groups?.days || "0");
+        date = new Date(NOW.getTime());
+        date.setDate(NOW.getDate() - days);
+      }
+
+      if (date)
+      {
         const elapsed = NOW.getTime() - date.getTime();
         const density = 1 - Math.max(Math.min(elapsed / BASE, 1), 0);
         element.style.opacity = (Math.max(density, 0.1)).toString();
