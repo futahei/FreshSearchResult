@@ -1,6 +1,7 @@
 import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
+const BG_COLOR = { r: 140, g: 49, b: 28 }
 
 const main = function() {
   const rangeVal = range.val();
@@ -12,6 +13,7 @@ const main = function() {
 
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
+    let density = 0.5;
     if (span.length > 0) {
       let date: Date|null = null;
       if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/)) {
@@ -22,14 +24,11 @@ const main = function() {
         date = new Date(NOW.getTime());
         date.setDate(NOW.getDate() - days);
       }
-
-      if (date) {
-        const elapsed = NOW.getTime() - date.getTime();
-        const density = 1 - Math.max(Math.min(elapsed / BASE, 1), 0);
-        element.style.opacity = (Math.max(density, 0.1)).toString();
-        return;
-      }
+      density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
+    element.style.opacity = (Math.max(density, 0.1)).toString();
+    element.style.backgroundColor = `rgb(${(255-BG_COLOR.r)*density+BG_COLOR.r},${(255-BG_COLOR.g)*density+BG_COLOR.g},${(255-BG_COLOR.b)*density+BG_COLOR.b})`;
+    return;
   });
 
   chrome.storage.sync.set({"fsr-year": rangeVal});
@@ -47,7 +46,7 @@ $(function() {
     }).appendTo("#result-stats");
     range.on("input", main);
 
-    // $("body").css("background-color", "#FFEB83");
+    $("body").css("background-color", `rgb(${BG_COLOR.r},${BG_COLOR.g},${BG_COLOR.b})`);
 
     main();
   });
