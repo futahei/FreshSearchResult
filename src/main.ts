@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
-const BG_COLOR = { r: 140, g: 49, b: 28 }
+const BG_COLOR = { r: 166, g: 84, b: 36 }
 
 const main = function() {
   const rangeVal = range.val();
@@ -26,7 +26,6 @@ const main = function() {
       }
       density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
-    element.style.opacity = (Math.max(density, 0.1)).toString();
     element.style.backgroundColor = `rgb(${(255-BG_COLOR.r)*density+BG_COLOR.r},${(255-BG_COLOR.g)*density+BG_COLOR.g},${(255-BG_COLOR.b)*density+BG_COLOR.b})`;
     return;
   });
