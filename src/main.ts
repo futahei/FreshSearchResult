@@ -30,7 +30,6 @@ const main = function() {
         return;
       }
     }
-    element.style.backgroundColor = `rgba(51, 221, 255, 0.2)`;
   });
 
   chrome.storage.sync.set({"fsr-year": rangeVal});
@@ -47,6 +46,8 @@ $(function() {
       value: res["fsr-year"]
     }).appendTo("#result-stats");
     range.on("input", main);
+
+    // $("body").css("background-color", "#FFEB83");
 
     main();
   });
