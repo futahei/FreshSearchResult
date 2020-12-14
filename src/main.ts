@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
-const BG_COLOR = { r: 166, g: 84, b: 36 }
+const BG_COLOR = { r: 150, g: 87, b: 23 }
 
 const main = function() {
   const rangeVal = range.val();
