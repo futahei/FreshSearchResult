@@ -24,6 +24,12 @@ const main = function() {
         date = new Date(NOW.getTime());
         date.setDate(NOW.getDate() - days);
       }
+      else if (span[0].innerHTML.substring(0, 5).match(/\d* 時間前/)) {
+        const found = span[0].innerHTML.substring(0, 5).match(/(?<hours>\d*) 時間前/);
+        const hours = Number(found?.groups?.hours || "0");
+        date = new Date(NOW.getTime());
+        date.setHours(NOW.getHours() - hours);
+      }
       density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
     element.style.backgroundColor = `rgb(${(255-BG_COLOR.r)*density+BG_COLOR.r},${(255-BG_COLOR.g)*density+BG_COLOR.g},${(255-BG_COLOR.b)*density+BG_COLOR.b})`;
