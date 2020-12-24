@@ -1,7 +1,5 @@
 import $ from 'jquery';
 
-let range: JQuery<HTMLElement>;
-
 const init = function() {
   $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
 }
@@ -13,12 +11,11 @@ const update = function(element: HTMLElement, density: number) {
   });
 }
 
-const main = function() {
-  const rangeVal = range.val();
-  const baseYear = Number(rangeVal);
+const main = function(year: number, mode: number) {
+  const baseYear = year;
   $("#baseYear").text(baseYear);
   const NOW = new Date();
-  const OLDEST = new Date(NOW.getFullYear() - Number(range.val()), NOW.getMonth(), NOW.getDate(), NOW.getHours(), NOW.getMinutes(), NOW.getSeconds(), NOW.getMilliseconds());
+  const OLDEST = new Date(NOW.getFullYear() - baseYear, NOW.getMonth(), NOW.getDate(), NOW.getHours(), NOW.getMinutes(), NOW.getSeconds(), NOW.getMilliseconds());
   const BASE = NOW.getTime() - OLDEST.getTime();
 
   $(".g").each(function(index: number, element: HTMLElement) {
@@ -47,24 +44,45 @@ const main = function() {
 
     return;
   });
-
-  chrome.storage.sync.set({"fsr-year": rangeVal});
 }
 
 $(function() {
   $("<span>基準年数：<span id='baseYear'>0</span>年</span>").appendTo("#result-stats");
-  const v = chrome.storage.sync.get({"fsr-year": "5"}, function(res) {
-    range = $("<input>").attr({
+  chrome.storage.sync.get({"fsr-year": 5, "fsr-mode": 0}, function(res) {
+    const range = $("<input>").attr({
       type: "range",
       id: "elapsedBaseYear",
       min: "1",
       max: "10",
-      value: res["fsr-year"]
+      value: res["fsr-year"].toString()
     }).appendTo("#result-stats");
-    range.on("input", main);
+    range.on("input", () => {
+      main(Number(range.val()), Number($("#result-stats").children('input[name="drawMode"]:checked').attr("value")));
+      chrome.storage.sync.set({"fsr-year": Number(range.val())});
+    });
+
+    for (let i = 0; i < 3; i++) {
+      const radio = $("<input>").attr({
+        type: "radio",
+        name: "drawMode",
+        value: i,
+        checked: res["fsr-mode"]==i
+      }).appendTo("#result-stats");
+      let mode: string = "";
+      switch(i) {
+        case 0: mode = "noise"; break;
+        case 1: mode = "grayscale"; break;
+        case 2: mode = "oldness"; break;
+      }
+      $(`<span>${mode}</span>`).appendTo("#result-stats");
+      radio.on("change", () => {
+        main(Number(range.val()), Number(radio.val()));
+        chrome.storage.sync.set({"fsr-mode": Number(radio.val())});
+      });
+    }
 
     init();
 
-    main();
+    main(res["fsr-year"], res["fsr-mode"]);
   });
 });
