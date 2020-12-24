@@ -33,7 +33,6 @@ const main = function() {
     }
 
     $(element).css({
-      // "background-image": `url(${chrome.runtime.getURL("image/noise.png")})`,
       "background-color": `rgba(255,255,255,${density})`,
       "background-blend-mode": "lighten"
     });
