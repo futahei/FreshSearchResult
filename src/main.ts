@@ -1,12 +1,13 @@
 import $ from 'jquery';
 
-const init = function() {
+const init = function(mode: number) {
   $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
 }
 
-const update = function(element: HTMLElement, density: number) {
+const update = function(element: HTMLElement, density: number, mode: number) {
+  const __density = density > 0 ? Math.min(density+0.3, 1) : 0;
   $(element).css({
-    "background-color": `rgba(255,255,255,${density})`,
+    "background-color": `rgba(255,255,255,${__density})`,
     "background-blend-mode": "lighten"
   });
 }
@@ -20,7 +21,7 @@ const main = function(year: number, mode: number) {
 
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
-    let density = 0.5;
+    let density = 0.0;
     if (span.length > 0) {
       let date: Date|null = null;
       if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/)) {
@@ -40,7 +41,7 @@ const main = function(year: number, mode: number) {
       density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
 
-    update(element, density);
+    update(element, density, mode);
 
     return;
   });
@@ -81,7 +82,7 @@ $(function() {
       });
     }
 
-    init();
+    init(res["fsr-mode"]);
 
     main(res["fsr-year"], res["fsr-mode"]);
   });
