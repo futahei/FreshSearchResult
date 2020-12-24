@@ -1,7 +1,17 @@
 import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
-const BG_COLOR = { r: 150, g: 87, b: 23 }
+
+const init = function() {
+  $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
+}
+
+const update = function(element: HTMLElement, density: number) {
+  $(element).css({
+    "background-color": `rgba(255,255,255,${density})`,
+    "background-blend-mode": "lighten"
+  });
+}
 
 const main = function() {
   const rangeVal = range.val();
@@ -32,7 +42,9 @@ const main = function() {
       }
       density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
-    element.style.backgroundColor = `rgb(${(255-BG_COLOR.r)*density+BG_COLOR.r},${(255-BG_COLOR.g)*density+BG_COLOR.g},${(255-BG_COLOR.b)*density+BG_COLOR.b})`;
+
+    update(element, density);
+
     return;
   });
 
@@ -51,7 +63,7 @@ $(function() {
     }).appendTo("#result-stats");
     range.on("input", main);
 
-    $("body").css("background-color", `rgb(${BG_COLOR.r},${BG_COLOR.g},${BG_COLOR.b})`);
+    init();
 
     main();
   });

@@ -15,5 +15,8 @@
         "js/main.js"
       ]
     }
+  ],
+  "web_accessible_resources": [
+    "image/noise.png"
   ]
 }
