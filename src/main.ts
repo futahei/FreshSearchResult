@@ -5,10 +5,22 @@ const init = function(mode: number) {
 }
 
 const update = function(element: HTMLElement, density: number, mode: number) {
-  const __density = density > 0 ? Math.min(density+0.3, 1) : 0;
+  const __density = density > 0 ? Math.min(density+0.2, 1) : 0;
   $(element).css({
+    "background-image": `url(${chrome.runtime.getURL("image/noise.png")})`,
     "background-color": `rgba(255,255,255,${__density})`,
     "background-blend-mode": "lighten"
+  });
+  $(element).find("span, cite, em").filter((i: number, e: HTMLSpanElement) => {
+    return e.innerText.length > 0;
+  }).each((i: number, e: HTMLSpanElement) => {
+    const d = Math.round(((1-__density)*4)*1000)/1000;
+    let rgb = $(e).css("color").replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+)\)/i);
+    if (!rgb) rgb = $(e).css("text-shadow").match(/^rgba?\((\d+), (\d+), (\d+)/i);
+    $(e).css({
+      "color": "transparent",
+      "text-shadow": `0 0 ${d}px rgba(${rgb?rgb[1]:0}, ${rgb?rgb[2]:0}, ${rgb?rgb[3]:0}, ${d>0?0.5:1.0})`
+    });
   });
 }
 
@@ -21,7 +33,7 @@ const main = function(year: number, mode: number) {
 
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
-    let density = 0.0;
+    let density = 0.2;
     if (span.length > 0) {
       let date: Date|null = null;
       if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/)) {
@@ -62,6 +74,7 @@ $(function() {
       chrome.storage.sync.set({"fsr-year": Number(range.val())});
     });
 
+    /*
     for (let i = 0; i < 3; i++) {
       const radio = $("<input>").attr({
         type: "radio",
@@ -81,6 +94,7 @@ $(function() {
         chrome.storage.sync.set({"fsr-mode": Number(radio.val())});
       });
     }
+    */
 
     init(res["fsr-mode"]);
 
