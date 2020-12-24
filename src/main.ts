@@ -2,6 +2,17 @@ import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
 
+const init = function() {
+  $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
+}
+
+const update = function(element: HTMLElement, density: number) {
+  $(element).css({
+    "background-color": `rgba(255,255,255,${density})`,
+    "background-blend-mode": "lighten"
+  });
+}
+
 const main = function() {
   const rangeVal = range.val();
   const baseYear = Number(rangeVal);
@@ -12,6 +23,7 @@ const main = function() {
 
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
+    let density = 0.5;
     if (span.length > 0) {
       let date: Date|null = null;
       if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/)) {
@@ -22,15 +34,18 @@ const main = function() {
         date = new Date(NOW.getTime());
         date.setDate(NOW.getDate() - days);
       }
-
-      if (date) {
-        const elapsed = NOW.getTime() - date.getTime();
-        const density = 1 - Math.max(Math.min(elapsed / BASE, 1), 0);
-        element.style.opacity = (Math.max(density, 0.1)).toString();
-        return;
+      else if (span[0].innerHTML.substring(0, 5).match(/\d* 時間前/)) {
+        const found = span[0].innerHTML.substring(0, 5).match(/(?<hours>\d*) 時間前/);
+        const hours = Number(found?.groups?.hours || "0");
+        date = new Date(NOW.getTime());
+        date.setHours(NOW.getHours() - hours);
       }
+      density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
-    element.style.backgroundColor = `rgba(51, 221, 255, 0.2)`;
+
+    update(element, density);
+
+    return;
   });
 
   chrome.storage.sync.set({"fsr-year": rangeVal});
@@ -47,6 +62,8 @@ $(function() {
       value: res["fsr-year"]
     }).appendTo("#result-stats");
     range.on("input", main);
+
+    init();
 
     main();
   });
