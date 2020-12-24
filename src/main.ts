@@ -2,6 +2,17 @@ import $ from 'jquery';
 
 let range: JQuery<HTMLElement>;
 
+const init = function() {
+  $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
+}
+
+const update = function(element: HTMLElement, density: number) {
+  $(element).css({
+    "background-color": `rgba(255,255,255,${density})`,
+    "background-blend-mode": "lighten"
+  });
+}
+
 const main = function() {
   const rangeVal = range.val();
   const baseYear = Number(rangeVal);
@@ -32,10 +43,8 @@ const main = function() {
       density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
     }
 
-    $(element).css({
-      "background-color": `rgba(255,255,255,${density})`,
-      "background-blend-mode": "lighten"
-    });
+    update(element, density);
+
     return;
   });
 
@@ -54,7 +63,7 @@ $(function() {
     }).appendTo("#result-stats");
     range.on("input", main);
 
-    $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
+    init();
 
     main();
   });
