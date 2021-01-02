@@ -38,15 +38,14 @@ const main = function(year: number, mode: number) {
     let density = -1.0;
     if (span.length > 0) {
       let date: Date|null = null;
-      if (span[0].innerHTML.substring(0, 10).match(/\d{4}\/\d{2}\/\d{2}/)) {
+      if (span[0].innerHTML.match(/\d{4}\/\d{2}\/\d{2}/)) {
         date = new Date(span[0].innerHTML.substring(0, 10));
-      } else if (span[0].innerHTML.substring(0, 4).match(/\d* 日前/)) {
-        const found = span[0].innerHTML.substring(0, 4).match(/(?<days>\d*) 日前/);
+      } else if (span[0].innerHTML.match(/\d* 日前/)) {
+        const found = span[0].innerHTML.match(/(?<days>\d*) 日前/);
         const days = Number(found?.groups?.days || "0");
         date = new Date(NOW.getTime());
         date.setDate(NOW.getDate() - days);
-      }
-      else if (span[0].innerHTML.substring(0, 5).match(/\d* 時間前/)) {
+      } else if (span[0].innerHTML.match(/\d* 時間前/)) {
         const found = span[0].innerHTML.substring(0, 5).match(/(?<hours>\d*) 時間前/);
         const hours = Number(found?.groups?.hours || "0");
         date = new Date(NOW.getTime());
