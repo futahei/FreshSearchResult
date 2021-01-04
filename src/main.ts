@@ -38,21 +38,27 @@ const main = function(year: number, mode: number) {
     let density = -1.0;
     if (span.length > 0) {
       let date: Date|null = null;
-      if (span[0].innerHTML.match(/\d{4}\/\d{2}\/\d{2}/)) {
-        date = new Date(span[0].innerHTML.substring(0, 10));
-      } else if (span[0].innerHTML.match(/\d* 日前/)) {
-        const found = span[0].innerHTML.match(/(?<days>\d*) 日前/);
+      const dateString = span[0].innerHTML;
+      if (dateString.match(/\d{4}\/\d{2}\/\d{2}/)) {
+        date = new Date(dateString.substring(0, 10));
+      } else if (dateString.match(/\d* 日前/)) {
+        const found = dateString.match(/(?<days>\d*) 日前/);
         const days = Number(found?.groups?.days || "0");
         date = new Date(NOW.getTime());
         date.setDate(NOW.getDate() - days);
-      } else if (span[0].innerHTML.match(/\d* 時間前/)) {
-        const found = span[0].innerHTML.substring(0, 5).match(/(?<hours>\d*) 時間前/);
+      } else if (dateString.match(/\d* 時間前/)) {
+        const found = dateString.substring(0, 5).match(/(?<hours>\d*) 時間前/);
         const hours = Number(found?.groups?.hours || "0");
         date = new Date(NOW.getTime());
         date.setHours(NOW.getHours() - hours);
       }
-      density = 1 - (date ? (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0)) : 0.5);
+
+      if (date) {
+        density = 1 - (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0));
+      }
     }
+
+    console.log(density);
 
     update(element, density, mode);
 
