@@ -1,21 +1,23 @@
 import $ from 'jquery';
 
 const init = function(mode: number) {
-  $("body").css("background-image", `url(${chrome.runtime.getURL("image/noise.png")})`);
+  $("body").css("background-image", `url(${chrome.runtime.getURL("image/bg/body-bg.jpg")})`);
 }
 
-const update = function(element: HTMLElement, density: number, mode: number) {
-  const __density = density > 0 ? Math.min(density+0.2, 1) : 0;
+const update = function(element: HTMLElement, freshness: number, mode: number) {
+  console.log(freshness);
+  const f = freshness > 0 ? Math.min(freshness + 0.1, 1) : 0;
   $(element).css({
-    "background-image": `url(${chrome.runtime.getURL("image/noise.png")})`,
-    "background-color": `rgba(255,255,255,${__density})`,
+    "background-image": `url(${chrome.runtime.getURL("image/bg/list-bg.png")})`,
+    "background-color": `rgba(255,255,255,${f})`,
     "background-blend-mode": "lighten"
   });
-  if (density >= 0) {
+  /*
+  if (freshness >= 0) {
     $(element).find("span, cite, em").filter((i: number, e: HTMLSpanElement) => {
       return e.innerText.length > 0;
     }).each((i: number, e: HTMLSpanElement) => {
-      const d = Math.round(((1-__density)*4)*1000)/1000;
+      const d = Math.round(((1-f)*4)*1000)/1000;
       let rgb = $(e).css("color").replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+)\)/i);
       if (!rgb) rgb = $(e).css("text-shadow").match(/^rgba?\((\d+), (\d+), (\d+)/i);
       $(e).css({
@@ -24,6 +26,12 @@ const update = function(element: HTMLElement, density: number, mode: number) {
       });
     });
   }
+  */
+}
+
+const getFreshness = function(targetTime: number, nowTime: number, baseTime: number): number {
+  // return 1 - (Math.max(Math.min((nowTime - targetTime) / baseTime, 1), 0));
+  return Math.pow(0.01, (Math.max(Math.min((nowTime - targetTime) / baseTime, 1), 0)));
 }
 
 const main = function(year: number, mode: number) {
@@ -35,7 +43,7 @@ const main = function(year: number, mode: number) {
 
   $(".g").each(function(index: number, element: HTMLElement) {
     const span = $(element).find("span.f");
-    let density = -1.0;
+    let freshness = 0.0;
     if (span.length > 0) {
       let date: Date|null = null;
       const dateString = span[0].innerHTML;
@@ -54,21 +62,21 @@ const main = function(year: number, mode: number) {
       }
 
       if (date) {
-        density = 1 - (Math.max(Math.min((NOW.getTime() - date.getTime()) / BASE, 1), 0));
+        // 1に近ければ近いほど新しい
+        freshness = getFreshness(date.getTime(), NOW.getTime(), BASE);
       }
     }
 
-    console.log(density);
-
-    update(element, density, mode);
+    update(element, freshness, mode);
 
     return;
   });
 }
 
 $(function() {
-  $("<span>基準年数：<span id='baseYear'>0</span>年</span>").appendTo("#result-stats");
+  $("<span>現在より<span id='baseYear'>0</span>年前までの情報を強調中..</span>").appendTo("#result-stats");
   chrome.storage.sync.get({"fsr-year": 5, "fsr-mode": 0}, function(res) {
+    /*
     const range = $("<input>").attr({
       type: "range",
       id: "elapsedBaseYear",
@@ -80,6 +88,7 @@ $(function() {
       main(Number(range.val()), Number($("#result-stats").children('input[name="drawMode"]:checked').attr("value")));
       chrome.storage.sync.set({"fsr-year": Number(range.val())});
     });
+    */
 
     init(res["fsr-mode"]);
 
