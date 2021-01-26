@@ -12,7 +12,8 @@ const update = function(element: HTMLElement, freshness: number, mode: number) {
     "background-color": `rgba(255,255,255,${f})`,
     "background-blend-mode": "lighten"
   });
-  /*
+
+  /* 文字を滲ませる
   if (freshness >= 0) {
     $(element).find("span, cite, em").filter((i: number, e: HTMLSpanElement) => {
       return e.innerText.length > 0;
